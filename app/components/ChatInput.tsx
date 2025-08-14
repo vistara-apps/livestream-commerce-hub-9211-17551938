@@ -122,7 +122,9 @@ export function ChatInput({
           size="sm"
           icon={<Send size={16} />}
           ariaLabel="Send message"
-        />
+        >
+          Send
+        </Button>
       </form>
       
       {message.length > maxLength && (
