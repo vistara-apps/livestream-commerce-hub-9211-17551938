@@ -1,16 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-
-interface Product {
-  productId: string;
-  name: string;
-  description: string;
-  price: number;
-  imageUrl: string;
-  onChainLink?: string;
-  isTokenGated: boolean;
-}
+import { Product } from "@/app/lib/types";
 
 interface BondingCurveProps {
   product: Product;
@@ -51,7 +42,7 @@ export function BondingCurve({
         <div className="flex items-center justify-between mb-md">
           <span className="text-sm text-neutral-500">Current Price</span>
           <span className="text-lg font-bold text-primary">
-            ${currentPrice.toFixed(2)} USDC
+            ${currentPrice.toFixed(2)} {product.currency}
           </span>
         </div>
         <div className="h-32 bg-neutral-100 rounded-md flex items-center justify-center">
@@ -97,7 +88,7 @@ export function BondingCurve({
       <div className="flex items-center justify-between p-md bg-neutral-100 rounded-md">
         <span className="text-sm text-neutral-500">Live Price</span>
         <span className="text-xl font-bold text-primary">
-          ${currentPrice.toFixed(2)} USDC
+          ${currentPrice.toFixed(2)} {product.currency}
         </span>
       </div>
 
@@ -107,3 +98,4 @@ export function BondingCurve({
     </div>
   );
 }
+

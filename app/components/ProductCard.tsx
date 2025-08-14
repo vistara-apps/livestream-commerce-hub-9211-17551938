@@ -1,4 +1,3 @@
-
 "use client";
 
 import { Product } from "@/app/lib/types";
@@ -11,14 +10,16 @@ interface ProductCardProps {
   product: Product;
   variant?: "live" | "preview";
   onPurchase: (productId: string) => void;
-  hasAccess: boolean;
+  onSelect?: (product: Product) => void;
+  hasAccess?: boolean;
 }
 
 export function ProductCard({ 
   product, 
   variant = "preview", 
   onPurchase, 
-  hasAccess 
+  onSelect,
+  hasAccess = true
 }: ProductCardProps) {
   const [isHovered, setIsHovered] = useState(false);
   
@@ -33,15 +34,23 @@ export function ProductCard({
     }
   };
 
+  const handleCardClick = () => {
+    if (onSelect && hasAccess) {
+      onSelect(product);
+    }
+  };
+
   return (
     <div
       className={cn(
         "card-product",
         variant === "live" && "ring-2 ring-accent/20",
-        !hasAccess && "opacity-60"
+        !hasAccess && "opacity-60",
+        onSelect && hasAccess && "cursor-pointer"
       )}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
+      onClick={handleCardClick}
     >
       {/* Product Image */}
       <div className="relative aspect-square bg-neutral-100 overflow-hidden">
@@ -126,7 +135,10 @@ export function ProductCard({
 
         {/* Action Button */}
         <button
-          onClick={handlePurchaseClick}
+          onClick={(e) => {
+            e.stopPropagation();
+            handlePurchaseClick();
+          }}
           disabled={!hasAccess}
           className={cn(
             "w-full flex items-center justify-center space-x-xs py-sm px-md rounded-md font-medium transition-colors duration-200",
@@ -157,3 +169,4 @@ export function ProductCard({
     </div>
   );
 }
+

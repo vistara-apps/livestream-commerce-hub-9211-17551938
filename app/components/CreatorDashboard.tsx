@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState } from "react";
@@ -8,7 +7,7 @@ import { ProductManager } from "./ProductManager";
 import { ArrowLeft, Video, Plus } from "lucide-react";
 
 interface CreatorDashboardProps {
-  user?: User | null;
+  user?: User;
   onStreamStart: (stream: Stream) => void;
   onBack: () => void;
 }
@@ -36,8 +35,10 @@ export function CreatorDashboard({ user, onStreamStart, onBack }: CreatorDashboa
   const handleStartStream = () => {
     if (!streamTitle.trim()) return;
 
+    const streamId = generateStreamId();
+    
     const stream: Stream = {
-      streamId: generateStreamId(),
+      streamId,
       creatorId: user?.userId || "anonymous",
       title: streamTitle,
       description: streamDescription,
@@ -47,13 +48,11 @@ export function CreatorDashboard({ user, onStreamStart, onBack }: CreatorDashboa
       isLive: true,
       isTokenGated,
       requiredToken: isTokenGated ? requiredToken : undefined,
+      products: products.map(p => ({
+        ...p,
+        streamId
+      }))
     };
-
-    // Update product streamIds
-    const updatedProducts = products.map(p => ({
-      ...p,
-      streamId: stream.streamId,
-    }));
 
     onStreamStart(stream);
   };
@@ -161,3 +160,4 @@ export function CreatorDashboard({ user, onStreamStart, onBack }: CreatorDashboa
     </div>
   );
 }
+

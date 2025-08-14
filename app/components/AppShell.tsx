@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect } from "react";
@@ -14,7 +13,7 @@ interface AppShellProps {
 }
 
 export function AppShell({ variant = "default", className }: AppShellProps) {
-  const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [currentUser, setCurrentUser] = useState<User | undefined>(undefined);
   const [activeStream, setActiveStream] = useState<Stream | null>(null);
   const [view, setView] = useState<"browse" | "create" | "stream">("browse");
 
@@ -115,3 +114,4 @@ export function AppShell({ variant = "default", className }: AppShellProps) {
     </div>
   );
 }
+
