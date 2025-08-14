@@ -5,34 +5,7 @@ import { ProductCard } from "./ProductCard";
 import { ChatInput } from "./ChatInput";
 import { ViewerActionButtons } from "./ViewerActionButtons";
 import { BondingCurve } from "./BondingCurve";
-
-interface User {
-  userId: string;
-  username: string;
-  walletAddress?: string;
-}
-
-interface Product {
-  productId: string;
-  name: string;
-  description: string;
-  price: number;
-  imageUrl: string;
-  onChainLink?: string;
-  isTokenGated: boolean;
-}
-
-interface Stream {
-  streamId: string;
-  title: string;
-  description: string;
-  creatorId: string;
-  startTime: string;
-  endTime?: string;
-  viewerCount: number;
-  isTokenGated?: boolean;
-  products: Product[];
-}
+import { User, Stream, Product } from "@/app/lib/types";
 
 interface ChatMessage {
   messageId: string;
@@ -46,10 +19,11 @@ interface ChatMessage {
 interface StreamViewProps {
   stream: Stream;
   user?: User;
-  onPurchase: (productId: string) => void;
+  onPurchase?: (productId: string) => void;
+  onBack?: () => void;
 }
 
-export function StreamView({ stream, user, onPurchase }: StreamViewProps) {
+export function StreamView({ stream, user, onPurchase = () => {} }: StreamViewProps) {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([
     {
@@ -210,3 +184,4 @@ export function StreamView({ stream, user, onPurchase }: StreamViewProps) {
     </div>
   );
 }
+

@@ -1,12 +1,7 @@
 "use client";
 
 import { useState } from "react";
-
-interface User {
-  userId: string;
-  username: string;
-  walletAddress?: string;
-}
+import { User } from "@/app/lib/types";
 
 interface ChatMessage {
   messageId: string;
@@ -94,3 +89,4 @@ export function ChatInput({
     </div>
   );
 }
+

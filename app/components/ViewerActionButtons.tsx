@@ -1,14 +1,7 @@
 "use client";
 
-interface Product {
-  productId: string;
-  name: string;
-  description: string;
-  price: number;
-  imageUrl: string;
-  onChainLink?: string;
-  isTokenGated: boolean;
-}
+import { Product } from "@/app/lib/types";
+import { formatPrice } from "@/app/lib/utils";
 
 interface ViewerActionButtonsProps {
   product: Product;
@@ -30,7 +23,7 @@ export function ViewerActionButtons({
         <p className="text-sm text-neutral-500 mb-md">{product.description}</p>
         <div className="flex items-center justify-between">
           <span className="text-lg font-bold text-primary">
-            ${product.price} USDC
+            {formatPrice(product.price, product.currency)}
           </span>
           {product.isTokenGated && (
             <span className="text-xs bg-accent/10 text-accent px-2 py-1 rounded">
@@ -57,3 +50,4 @@ export function ViewerActionButtons({
     </div>
   );
 }
+

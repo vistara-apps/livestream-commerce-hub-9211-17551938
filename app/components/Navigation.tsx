@@ -1,4 +1,3 @@
-
 "use client";
 
 import { User } from "@/app/lib/types";
@@ -10,7 +9,7 @@ import { cn } from "@/app/lib/utils";
 interface NavigationProps {
   currentView: "browse" | "create" | "stream";
   onViewChange: (view: "browse" | "create" | "stream") => void;
-  user?: User | null;
+  user?: User;
 }
 
 export function Navigation({ currentView, onViewChange, user }: NavigationProps) {
@@ -69,3 +68,4 @@ export function Navigation({ currentView, onViewChange, user }: NavigationProps)
     </nav>
   );
 }
+
