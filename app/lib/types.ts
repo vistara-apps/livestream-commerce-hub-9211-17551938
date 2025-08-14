@@ -1,65 +1,123 @@
-
+/**
+ * User type definition
+ */
 export interface User {
   userId: string;
-  farcasterId?: string;
   walletAddress: string;
   username: string;
   bio?: string;
+  avatarUrl?: string;
+  tokens?: string[];
 }
 
+/**
+ * Stream type definition
+ */
 export interface Stream {
   streamId: string;
   creatorId: string;
   title: string;
-  description: string;
-  startTime: Date;
-  endTime?: Date;
-  productIds: string[];
-  viewerCount: number;
+  description?: string;
+  startTime: Date | string;
+  endTime?: Date | string;
   isLive: boolean;
+  viewerCount: number;
+  productIds?: string[];
+  products?: Product[];
   isTokenGated?: boolean;
   requiredToken?: string;
 }
 
+/**
+ * Product type definition
+ */
 export interface Product {
   productId: string;
   streamId: string;
   name: string;
-  description: string;
+  description?: string;
   price: number;
-  currency: 'USDC' | 'ETH';
-  imageUrl: string;
-  onChainLink?: string;
-  isTokenGated: boolean;
-  stock?: number;
+  currency: "USDC" | "ETH";
+  imageUrl?: string;
+  isTokenGated?: boolean;
   isPinned?: boolean;
+  stock?: number;
+  soldCount?: number;
 }
 
+/**
+ * Chat message type definition
+ */
+export interface ChatMessage {
+  messageId: string;
+  userId: string;
+  username: string;
+  content: string;
+  timestamp: string;
+  isTokenGatedContent?: boolean;
+}
+
+/**
+ * Purchase type definition
+ */
 export interface Purchase {
   purchaseId: string;
   userId: string;
   productId: string;
   streamId: string;
-  transactionHash: string;
-  amount: number;
-  timestamp: Date;
-  paymentMethod: 'USDC' | 'ETH';
+  price: number;
+  currency: "USDC" | "ETH";
+  timestamp: string;
+  status: "pending" | "completed" | "failed";
+  transactionHash?: string;
 }
 
-export interface ChatMessage {
-  messageId: string;
-  streamId: string;
+/**
+ * Token type definition
+ */
+export interface Token {
+  tokenId: string;
+  contractAddress: string;
+  name: string;
+  symbol: string;
+  decimals: number;
+  balance: number;
+}
+
+/**
+ * Notification type definition
+ */
+export interface Notification {
+  id: string;
   userId: string;
-  username: string;
-  content: string;
-  timestamp: Date;
-  isTokenGatedContent: boolean;
+  type: "purchase" | "stream_start" | "stream_end" | "message" | "system";
+  title: string;
+  message: string;
+  timestamp: string;
+  isRead: boolean;
+  data?: Record<string, any>;
 }
 
-export interface AppState {
-  currentUser?: User;
-  activeStream?: Stream;
-  products: Product[];
-  chatMessages: ChatMessage[];
-  isCreator: boolean;
+/**
+ * Theme type definition
+ */
+export type ThemeMode = "light" | "dark" | "system";
+
+/**
+ * User settings type definition
+ */
+export interface UserSettings {
+  userId: string;
+  theme: ThemeMode;
+  notifications: {
+    purchases: boolean;
+    streams: boolean;
+    messages: boolean;
+    system: boolean;
+  };
+  privacy: {
+    showWalletAddress: boolean;
+    showPurchaseHistory: boolean;
+  };
 }
+

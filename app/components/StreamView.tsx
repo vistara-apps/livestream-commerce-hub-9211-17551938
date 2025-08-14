@@ -1,55 +1,24 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { ProductCard } from "./ProductCard";
 import { ChatInput } from "./ChatInput";
 import { ViewerActionButtons } from "./ViewerActionButtons";
 import { BondingCurve } from "./BondingCurve";
-
-interface User {
-  userId: string;
-  username: string;
-  walletAddress?: string;
-}
-
-interface Product {
-  productId: string;
-  name: string;
-  description: string;
-  price: number;
-  imageUrl: string;
-  onChainLink?: string;
-  isTokenGated: boolean;
-}
-
-interface Stream {
-  streamId: string;
-  title: string;
-  description: string;
-  creatorId: string;
-  startTime: string;
-  endTime?: string;
-  viewerCount: number;
-  isTokenGated?: boolean;
-  products: Product[];
-}
-
-interface ChatMessage {
-  messageId: string;
-  userId: string;
-  username: string;
-  content: string;
-  timestamp: string;
-  isTokenGatedContent: boolean;
-}
+import { User, Stream, Product, ChatMessage } from "@/app/lib/types";
+import { cn } from "@/app/lib/utils";
+import { ArrowLeft, Users, MessageCircle, X } from "lucide-react";
+import { Button } from "./ui/Button";
+import { Tooltip } from "./ui/Tooltip";
 
 interface StreamViewProps {
   stream: Stream;
-  user?: User;
-  onPurchase: (productId: string) => void;
+  user?: User | null;
+  onPurchase?: (productId: string) => void;
+  onBack?: () => void;
 }
 
-export function StreamView({ stream, user, onPurchase }: StreamViewProps) {
+export function StreamView({ stream, user, onPurchase, onBack }: StreamViewProps) {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([
     {
@@ -69,13 +38,42 @@ export function StreamView({ stream, user, onPurchase }: StreamViewProps) {
       isTokenGatedContent: false,
     },
   ]);
+  const [isChatVisible, setIsChatVisible] = useState(true);
+  const [isMobile, setIsMobile] = useState(false);
+  const chatContainerRef = useRef<HTMLDivElement>(null);
+
+  // Check if mobile on mount and window resize
+  useEffect(() => {
+    const checkIfMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+      if (window.innerWidth < 768) {
+        setIsChatVisible(false);
+      }
+    };
+    
+    checkIfMobile();
+    window.addEventListener('resize', checkIfMobile);
+    
+    return () => {
+      window.removeEventListener('resize', checkIfMobile);
+    };
+  }, []);
+
+  // Auto-scroll chat to bottom when new messages arrive
+  useEffect(() => {
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+    }
+  }, [chatMessages]);
 
   const handleProductSelect = (product: Product) => {
     setSelectedProduct(product);
   };
 
   const handlePurchase = (productId: string) => {
-    onPurchase(productId);
+    if (onPurchase) {
+      onPurchase(productId);
+    }
     setSelectedProduct(null);
   };
 
@@ -94,24 +92,60 @@ export function StreamView({ stream, user, onPurchase }: StreamViewProps) {
     setChatMessages(prev => [...prev, newMessage]);
   };
 
+  const toggleChat = () => {
+    setIsChatVisible(!isChatVisible);
+  };
+
   return (
-    <div className="flex flex-col h-screen bg-bg">
+    <div className="flex flex-col h-[calc(100vh-4rem)] bg-bg">
       {/* Stream Header */}
-      <div className="bg-surface border-b border-neutral-100 p-md">
-        <h1 className="heading text-neutral-900">{stream.title}</h1>
-        <p className="body text-neutral-500 mt-sm">{stream.description}</p>
-        <div className="flex items-center gap-md mt-sm">
-          <span className="text-sm text-neutral-500">
-            {stream.viewerCount} viewers
-          </span>
-          <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
-          <span className="text-sm text-red-500 font-medium">LIVE</span>
+      <div className="bg-surface border-b border-neutral-200 p-md sticky top-0 z-10 shadow-sm">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center">
+            {onBack && (
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={onBack}
+                className="mr-sm"
+                icon={<ArrowLeft size={16} />}
+                ariaLabel="Go back"
+              />
+            )}
+            <div>
+              <h1 className="heading-text text-neutral-900">{stream.title}</h1>
+              <div className="flex items-center gap-md mt-xs">
+                <span className="text-sm text-neutral-500 flex items-center">
+                  <Users size={14} className="mr-xs" />
+                  {stream.viewerCount} viewers
+                </span>
+                <div className="flex items-center">
+                  <div className="w-2 h-2 bg-error rounded-full animate-pulse mr-xs"></div>
+                  <span className="text-sm text-error font-medium">LIVE</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          {isMobile && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={toggleChat}
+              icon={<MessageCircle size={16} />}
+              className={isChatVisible ? "bg-primary-light text-primary" : ""}
+              ariaLabel={isChatVisible ? "Hide chat" : "Show chat"}
+            />
+          )}
         </div>
       </div>
 
-      <div className="flex-1 flex">
+      <div className="flex-1 flex overflow-hidden">
         {/* Main Content */}
-        <div className="flex-1 flex flex-col">
+        <div className={cn(
+          "flex-1 flex flex-col overflow-y-auto transition-all duration-300",
+          isMobile && isChatVisible && "hidden"
+        )}>
           {/* Video Stream Placeholder */}
           <div className="bg-neutral-900 aspect-video flex items-center justify-center">
             <div className="text-center text-white">
@@ -120,22 +154,30 @@ export function StreamView({ stream, user, onPurchase }: StreamViewProps) {
                   <path d="M8 5v10l7-5-7-5z" />
                 </svg>
               </div>
-              <p className="body">Live Stream</p>
+              <p className="body-text text-white">Live Stream</p>
               <p className="text-sm text-white/70">Video feed would appear here</p>
             </div>
           </div>
 
+          {/* Stream description */}
+          {stream.description && (
+            <div className="p-md border-b border-neutral-200 bg-surface">
+              <p className="text-sm text-neutral-700">{stream.description}</p>
+            </div>
+          )}
+
           {/* Featured Products */}
-          <div className="p-md border-b border-neutral-100">
-            <h3 className="heading text-neutral-900 mb-md">Featured Products</h3>
+          <div className="p-md border-b border-neutral-200">
+            <h3 className="heading-text text-neutral-900 mb-md">Featured Products</h3>
             <div className="grid grid-cols-2 gap-md">
-              {stream.products.map((product) => (
+              {stream.products && stream.products.map((product) => (
                 <ProductCard
                   key={product.productId}
                   product={product}
                   variant="live"
                   onSelect={() => handleProductSelect(product)}
                   onPurchase={() => handlePurchase(product.productId)}
+                  hasAccess={true} // Would check token ownership
                 />
               ))}
             </div>
@@ -143,7 +185,17 @@ export function StreamView({ stream, user, onPurchase }: StreamViewProps) {
 
           {/* Bonding Curve (if applicable) */}
           {selectedProduct && (
-            <div className="p-md border-b border-neutral-100">
+            <div className="p-md border-b border-neutral-200">
+              <div className="flex items-center justify-between mb-md">
+                <h3 className="heading-text text-neutral-900">Dynamic Pricing</h3>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setSelectedProduct(null)}
+                  icon={<X size={16} />}
+                  ariaLabel="Close bonding curve"
+                />
+              </div>
               <BondingCurve
                 product={selectedProduct}
                 variant="interactive"
@@ -154,30 +206,56 @@ export function StreamView({ stream, user, onPurchase }: StreamViewProps) {
         </div>
 
         {/* Chat Sidebar */}
-        <div className="w-80 border-l border-neutral-100 flex flex-col">
-          <div className="p-md border-b border-neutral-100">
-            <h3 className="heading text-neutral-900">Live Chat</h3>
-            {stream.isTokenGated && (
-              <p className="text-sm text-accent mt-sm">
-                🔒 Token-gated chat active
-              </p>
+        <div className={cn(
+          "w-80 border-l border-neutral-200 flex flex-col bg-surface transition-all duration-300",
+          isMobile && !isChatVisible && "hidden",
+          isMobile && isChatVisible && "w-full"
+        )}>
+          <div className="p-md border-b border-neutral-200 flex items-center justify-between">
+            <div>
+              <h3 className="heading-text text-neutral-900">Live Chat</h3>
+              {stream.isTokenGated && (
+                <p className="text-sm text-accent mt-xs flex items-center">
+                  <Tooltip content="Only token holders can participate in this chat">
+                    <span className="flex items-center">
+                      <Lock size={14} className="mr-xs" />
+                      Token-gated chat active
+                    </span>
+                  </Tooltip>
+                </p>
+              )}
+            </div>
+            
+            {isMobile && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={toggleChat}
+                icon={<X size={16} />}
+                ariaLabel="Close chat"
+              />
             )}
           </div>
 
-          <div className="flex-1 overflow-y-auto p-md space-y-md">
+          <div 
+            ref={chatContainerRef}
+            className="flex-1 overflow-y-auto p-md space-y-md"
+          >
             {chatMessages.map((message) => (
-              <div key={message.messageId} className="space-y-1">
+              <div key={message.messageId} className="space-y-1 animate-fade-in">
                 <div className="flex items-center gap-2">
                   <span className="text-sm font-medium text-neutral-900">
                     {message.username}
                   </span>
                   <span className="text-xs text-neutral-500">
-                    {new Date(message.timestamp).toLocaleTimeString()}
+                    {new Date(message.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
                   </span>
                   {message.isTokenGatedContent && (
-                    <span className="text-xs bg-accent/10 text-accent px-2 py-1 rounded">
-                      🔒
-                    </span>
+                    <Tooltip content="Token-gated message">
+                      <span className="text-xs bg-accent/10 text-accent px-2 py-1 rounded">
+                        🔒
+                      </span>
+                    </Tooltip>
                   )}
                 </div>
                 <p className="text-sm text-neutral-700">{message.content}</p>
@@ -198,7 +276,7 @@ export function StreamView({ stream, user, onPurchase }: StreamViewProps) {
 
       {/* Action Buttons */}
       {selectedProduct && (
-        <div className="p-md border-t border-neutral-100 bg-surface">
+        <div className="p-md border-t border-neutral-200 bg-surface sticky bottom-0 shadow-md">
           <ViewerActionButtons
             product={selectedProduct}
             variant="buy"
@@ -210,3 +288,4 @@ export function StreamView({ stream, user, onPurchase }: StreamViewProps) {
     </div>
   );
 }
+

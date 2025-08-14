@@ -1,12 +1,21 @@
-
 import "@coinbase/onchainkit/styles.css";
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { Providers } from "./providers";
+import { Inter } from "next/font/google";
+
+// Load Inter font
+const inter = Inter({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-inter",
+});
 
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
 };
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -14,6 +23,10 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: "Livestream Commerce Hub",
     description: "Turn your live streams into shoppable experiences and build passionate communities",
+    themeColor: "#4f46e5", // Primary color
+    icons: {
+      icon: "/favicon.ico",
+    },
     other: {
       "fc:frame": JSON.stringify({
         version: "next",
@@ -39,10 +52,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className="bg-bg">
+    <html lang="en" className={inter.variable}>
+      <body className="bg-bg antialiased">
         <Providers>{children}</Providers>
       </body>
     </html>
   );
 }
+
