@@ -1,0 +1,14 @@
+{
+  "name": "Livestream Commerce Hub",
+  "description": "Livestream Commerce Hub is a Base Mini App built with Zara.",
+  "image": "https://dummyimage.com/1200x628/0a0b0d/ffffff.png&text=OG",
+  "external_url": "https://921142d0-1445-4122-a401-37ea61e351b6.vistara.dev",
+  "properties": {
+    "app": {
+      "name": "Livestream Commerce Hub",
+      "description": "Livestream Commerce Hub is a Base Mini App built with Zara.",
+      "url": "https://921142d0-1445-4122-a401-37ea61e351b6.vistara.dev",
+      "icon": "https://0co.to/images/zara-2.png"
+    }
+  }
+}

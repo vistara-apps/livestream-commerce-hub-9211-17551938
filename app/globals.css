@@ -1,0 +1,88 @@
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --bg: 200 8% 98%;
+    --accent: 30 90% 55%;
+    --primary: 240 70% 50%;
+    --surface: 200 8% 100%;
+    --neutral-100: 200 8% 95%;
+    --neutral-500: 200 8% 50%;
+    --neutral-900: 200 8% 10%;
+  }
+  
+  body {
+    @apply bg-bg text-neutral-900 font-normal;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-primary hover:bg-primary/90 text-white px-lg py-md rounded-md transition-colors duration-200 font-medium;
+  }
+  
+  .btn-accent {
+    @apply bg-accent hover:bg-accent/90 text-white px-lg py-md rounded-md transition-colors duration-200 font-medium;
+  }
+  
+  .btn-secondary {
+    @apply bg-surface hover:bg-neutral-100 text-neutral-900 border border-neutral-100 px-lg py-md rounded-md transition-colors duration-200 font-medium;
+  }
+  
+  .card {
+    @apply bg-surface border border-neutral-100 rounded-lg p-lg shadow-card;
+  }
+  
+  .card-product {
+    @apply bg-surface border border-neutral-100 rounded-lg overflow-hidden shadow-card hover:shadow-lg transition-shadow duration-200;
+  }
+  
+  .input-field {
+    @apply bg-surface border border-neutral-100 rounded-md px-md py-md text-neutral-900 placeholder:text-neutral-500 focus:border-primary focus:outline-none transition-colors duration-200;
+  }
+  
+  .chat-message {
+    @apply bg-surface border border-neutral-100 rounded-lg p-md mb-sm;
+  }
+  
+  .live-indicator {
+    @apply bg-red-500 text-white px-md py-xs rounded-full text-sm font-medium animate-pulse;
+  }
+  
+  .viewer-count {
+    @apply bg-neutral-900/75 text-white px-md py-xs rounded-full text-sm font-medium;
+  }
+  
+  .display-text {
+    @apply text-3xl font-bold;
+  }
+  
+  .heading-text {
+    @apply text-xl font-semibold;
+  }
+  
+  .body-text {
+    @apply text-base font-normal leading-relaxed;
+  }
+  
+  .container-app {
+    @apply max-w-screen-sm px-4 mx-auto;
+  }
+  
+  .grid-12 {
+    @apply grid grid-cols-12 gap-gutter;
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(10px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
