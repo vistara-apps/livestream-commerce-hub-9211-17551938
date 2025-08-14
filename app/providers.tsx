@@ -1,9 +1,9 @@
-
 "use client";
 
 import { type ReactNode } from "react";
 import { base } from "wagmi/chains";
 import { MiniKitProvider } from "@coinbase/onchainkit/minikit";
+import { ToastProvider } from "./components/ui/Toast";
 
 export function Providers(props: { children: ReactNode }) {
   return (
@@ -19,7 +19,10 @@ export function Providers(props: { children: ReactNode }) {
         },
       }}
     >
-      {props.children}
+      <ToastProvider>
+        {props.children}
+      </ToastProvider>
     </MiniKitProvider>
   );
 }
+
