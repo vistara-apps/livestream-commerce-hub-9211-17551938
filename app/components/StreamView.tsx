@@ -129,7 +129,7 @@ export function StreamView({ stream, user, onPurchase }: StreamViewProps) {
           <div className="p-md border-b border-neutral-100">
             <h3 className="heading text-neutral-900 mb-md">Featured Products</h3>
             <div className="grid grid-cols-2 gap-md">
-              {stream.products.map((product) => (
+              {stream.products && stream.products.map((product) => (
                 <ProductCard
                   key={product.productId}
                   product={product}

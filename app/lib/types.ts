@@ -1,4 +1,3 @@
-
 export interface User {
   userId: string;
   farcasterId?: string;
@@ -19,6 +18,7 @@ export interface Stream {
   isLive: boolean;
   isTokenGated?: boolean;
   requiredToken?: string;
+  products?: Product[]; // Added products property to fix type error
 }
 
 export interface Product {
